@@ -1,0 +1,37 @@
+
+¤squid:S1186e"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ÊÖ¦¨üÿÿÿÿ8‰˜À´Ì,
+Gsquid:S1148‘"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ8‰˜À´Ì,
+Gsquid:S1148©"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ8‰˜À´Ì,
+Jsquid:S1168õ"+Return an empty collection instead of null.(¥¹ï8‰˜À´Ì,
+‰squid:S1149”"eReplace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".(˜œúÿÿÿÿ8‰˜À´Ì,
+fsquid:S00112‡"FDefine and throw a dedicated exception instead of using a generic one.(ÄĞ«Ñ8‰˜À´Ì,
+Gsquid:S1148¹"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ8‰˜À´Ì,
+zsquid:S1149‹"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(Š«¾ÿÿÿÿÿ8‰˜À´Ì,
+usquid:S1149Æ"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(ˆ°öŞ8‰˜À´Ì,
+„squid:S1149û"eReplace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".(×Û8‰˜À´Ì,
+Gsquid:S1148¾"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ8‰˜À´Ì,
+‰squid:S1149…"eReplace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".(˜œúÿÿÿÿ8‰˜À´Ì,
+zsquid:S1149ç"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(¤§ä…ÿÿÿÿÿ8‰˜À´Ì,
+jsquid:CommentedOutCodeLineº"<This block of commented-out lines of code should be removed.(ˆğŞÒ8‰˜À´Ì,
+‰squid:S1149ì"eReplace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".(ŠÃ‡€ıÿÿÿÿ8‰˜À´Ì,
+xsquid:S2293¤"YReplace the type specification in this constructor call with the diamond operator ("<>").(·ììÊ8‰˜À´Ì,
+Gsquid:S1148å"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ8‰˜À´Ì,
+Bsquid:S1148«"#Use a logger to log this exception.(Ç’Çê8‰˜À´Ì,
+osquid:CommentedOutCodeLine‹"<This block of commented-out lines of code should be removed.(ä«ğ®ùÿÿÿÿ8‰˜À´Ì,
+Usquid:S2696¶"6Make the enclosing method "static" or remove this set.(Œˆ¦ş8‰˜À´Ì,
+}squid:S2293¯"YReplace the type specification in this constructor call with the diamond operator ("<>").(šÀÈ©úÿÿÿÿ8‰˜À´Ì,
+‰squid:S1149ó"eReplace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".(ôƒÍ¿øÿÿÿÿ8‰˜À´Ì,
+Fsquid:S1148u"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ8‰˜À´Ì,
+vsquid:S3776¿"RRefactor this method to reduce its Cognitive Complexity from 29 to the 15 allowed.(Ø–¸ûÿÿÿÿ8‰˜À´Ì,
+]squid:S1155">Use isEmpty() to check whether the collection is empty or not.(ÒÂ÷8‰˜À´Ì,
+Gsquid:S1148ñ"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ8‰˜À´Ì,
+}squid:S2293¡"YReplace the type specification in this constructor call with the diamond operator ("<>").(á¸‚šùÿÿÿÿ8‰˜À´Ì,
+vsquid:S3776Â"RRefactor this method to reduce its Cognitive Complexity from 29 to the 15 allowed.(éòŠÅúÿÿÿÿ8‰˜À´Ì,
+usquid:S1149÷"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(™¹´Ÿ8‰˜À´Ì,
+ƒsquid:S1149µ"eReplace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".(Ğ»¶,8‰˜À´Ì,
+Gsquid:S1148¦"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ8‰˜À´Ì,
+Gsquid:S1148ï"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ8‰˜À´Ì,
+xsquid:S2068:"U'PASSWORD' detected in this expression, review this potentially hardcoded credential.(œ³’íşÿÿÿÿ8‰˜À´Ì,
+\
+squid:S106‰"9Replace this use of System.out or System.err by a logger.(©şêÜúÿÿÿÿ8‰˜À´Ì,
+usquid:S1149‡"VReplace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".(°˜•Ç8‰˜À´Ì,
