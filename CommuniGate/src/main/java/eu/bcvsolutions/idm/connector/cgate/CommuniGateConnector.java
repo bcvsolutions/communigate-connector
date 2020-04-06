@@ -274,10 +274,13 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 		//nastaveni aliasu
 		try {
 			if (aliases != null) {
-				Vector aliasesVector = new Vector(aliases);
-				cli.setAccountAliases(accountUid + "@" + config.getDomainName(), aliasesVector);
-			} else {
-				cli.setAccountAliases(accountUid + "@" + config.getDomainName(), new Vector());
+				if (aliases.size() == 1 && ((String)aliases.get(0)).isEmpty()) {
+					log.info("Setting empty Vector.");
+					cli.setAccountAliases(accountUid + "@" + config.getDomainName(), new Vector<>());
+				} else {
+					Vector aliasesVector = new Vector(aliases);
+					cli.setAccountAliases(accountUid + "@" + config.getDomainName(), aliasesVector);
+				}
 			}
 		} catch (CGProException e) {
 			log.error("Exception during updating account aliases, error code: " + cli.getErrCode());
