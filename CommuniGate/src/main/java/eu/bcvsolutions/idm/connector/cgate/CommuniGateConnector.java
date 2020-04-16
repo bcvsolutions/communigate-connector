@@ -404,7 +404,9 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 				for(Object key : accounts.keySet()) {
 					//na kazdy ucet zavolam get a zaradim ho mezi nalezene ucty
 					object = getConnectorObject((String) key);
-					handler.handle(object);
+					if (object != null) {
+						handler.handle(object);
+					}
 				}
 			} catch(Exception e) {
 				log.error("Exception during listing accounts, error code: " + cli.getErrCode());
@@ -474,6 +476,7 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 		} catch (Exception e) {
 			log.error("Exception during getting account " + uid + "@" + config.getDomainName()+ ", error code: " + cli.getErrCode());
 			e.printStackTrace();
+			return null;
 		}
 		return builder.build();
 	}
