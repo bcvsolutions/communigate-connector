@@ -61,11 +61,13 @@ import org.identityconnectors.framework.spi.operations.TestOp;
 import org.identityconnectors.framework.spi.operations.UpdateOp;
 
 import com.stalker.CGPro.CGProCLI;
+import com.stalker.CGPro.CGProException;
 
 /**
  * Třída implementující funkcionalitu poskytovanou CGate konektorem.
  *
  * @author Vojtěch Matocha
+ * @author Roman Kucera
  */
 @ConnectorClass(displayNameKey="CommuniGate_Connector",
 		configurationClass = CommuniGateConfiguration.class)
@@ -82,6 +84,7 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 	private static final String ACCESS_MODES_ATTR = "accessModes";
 	private static final String UNIT_ATTR = "unit";
 	private static final String CITY_ATTR = "city";
+	private static final String ALIASES_ATTR = "aliases";
 	//====================================================
 
 	/* ===================================================
@@ -196,6 +199,7 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 		flagSet = new TreeSet<AttributeInfo.Flags>();
 		flagSet.add(AttributeInfo.Flags.MULTIVALUED);
 		attributesInfoSet.add(AttributeInfoBuilder.build(ACCESS_MODES_ATTR, String.class, flagSet));
+		attributesInfoSet.add(AttributeInfoBuilder.build(ALIASES_ATTR, String.class, flagSet));
 
 		info = new ObjectClassInfoBuilder().addAllAttributeInfo(attributesInfoSet).build();
 
@@ -220,6 +224,7 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 		List accessModes = null;
 		String unit = null;
 		String city = null;
+		List aliases = null;
 
 		//zpracuji atributy, ktere jsem dostal na vstupu, do promennych
 		for (Attribute attr : attributes) {
@@ -238,6 +243,8 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 				unit = (String) attr.getValue().get(0);
 			} else if (CITY_ATTR.equals(name)) {
 				city = (String) attr.getValue().get(0);
+			} else if (ALIASES_ATTR.equals(name)) {
+				aliases = attr.getValue();
 			}
 		}
 
@@ -263,6 +270,22 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 			}
 		}
 
+
+		//nastaveni aliasu
+		try {
+			if (aliases != null) {
+				if (aliases.size() == 1 && ((String)aliases.get(0)).isEmpty()) {
+					log.info("Setting empty Vector.");
+					cli.setAccountAliases(accountUid + "@" + config.getDomainName(), new Vector<>());
+				} else {
+					Vector aliasesVector = new Vector(aliases);
+					cli.setAccountAliases(accountUid + "@" + config.getDomainName(), aliasesVector);
+				}
+			}
+		} catch (CGProException e) {
+			log.error("Exception during updating account aliases, error code: " + cli.getErrCode());
+			e.printStackTrace();
+		}
 
 		//nastaveni uctu
 		Hashtable settings = null;
@@ -381,7 +404,9 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 				for(Object key : accounts.keySet()) {
 					//na kazdy ucet zavolam get a zaradim ho mezi nalezene ucty
 					object = getConnectorObject((String) key);
-					handler.handle(object);
+					if (object != null) {
+						handler.handle(object);
+					}
 				}
 			} catch(Exception e) {
 				log.error("Exception during listing accounts, error code: " + cli.getErrCode());
@@ -412,7 +437,8 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 		Hashtable settings;
 		try {
 			//Načtu aktuální nastavení účtu
-			settings = cli.getAccountSettings(uid + "@" + config.getDomainName());
+			String email = uid + "@" + config.getDomainName();
+			settings = cli.getAccountSettings(email);
 			//log.info("CGate connector - getObject, settings ==========");
 			//for (Object key : settings.keySet()) {
 			//	log.info("CGate connector - getObject, settingKey: " + key.toString());
@@ -441,9 +467,16 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 				builder.addAttribute(AttributeBuilder.build(CITY_ATTR, CGProCLI.decodeString(city)));
 			}
 			builder.addAttribute(AttributeBuilder.build(ACCOUNT_ATTR, uid));
+
+			// Načtení aliasů
+			Vector accountAliases = cli.getAccountAliases(email);
+			if (accountAliases != null) {
+				builder.addAttribute(AttributeBuilder.build(ALIASES_ATTR, accountAliases.subList(0, accountAliases.size())));
+			}
 		} catch (Exception e) {
 			log.error("Exception during getting account " + uid + "@" + config.getDomainName()+ ", error code: " + cli.getErrCode());
 			e.printStackTrace();
+			return null;
 		}
 		return builder.build();
 	}
@@ -478,6 +511,7 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 		GuardedString password = null;
 		boolean disabled = false;
 		List accessModes = null;
+		List aliases = null;
 		String defaultStorageLimit = config.getDefaultMailStorageLimit();
 		String defaultMailboxLimit = config.getDefaultMailBoxLimit();
 
@@ -506,6 +540,8 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 				settings.put(UNIT_SETTING, CGProCLI.encodeString((String) attr.getValue().get(0)));
 			} else if (CITY_ATTR.equals(name)) {
 				settings.put(CITY_SETTING, CGProCLI.encodeString((String) attr.getValue().get(0)));
+			} else if (ALIASES_ATTR.equals(name)) {
+				aliases = attr.getValue();
 			}
 		}
 
@@ -531,11 +567,19 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 		try {
 			if ((accountUid != null) && (!"".equals(accountUid))) {
 				//webova sluzba, ktera vytvori ucet
-				cli.createAccount(accountUid + "@" + config.getDomainName(),settings,null,false);
+				String email = accountUid + "@" + config.getDomainName();
+				cli.createAccount(email,settings,null,false);
 				if (password != null) {
 					//bylo-li zadano heslo, nastavim ho
-					cli.setAccountPassword(accountUid + "@" + config.getDomainName(), asString(password));
+					cli.setAccountPassword(email, asString(password));
 				}
+
+				//nastaveni aliasu
+				if (aliases != null) {
+					Vector aliasesVector = new Vector(aliases);
+					cli.setAccountAliases(email, aliasesVector);
+				}
+
 				return new Uid(accountUid);
 			}
 		} catch(Exception e) {
