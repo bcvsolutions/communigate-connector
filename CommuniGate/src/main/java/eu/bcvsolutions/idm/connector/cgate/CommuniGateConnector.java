@@ -77,33 +77,36 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 	/* ==================================================
 	 * Názvy atributů pro konektor
 	 */
-	private static final String REAL_NAME_ATTR = "realName";
-	private static final String PASSWORD_ATTR = "__PASSWORD__";
-	private static final String ACCOUNT_ATTR = "account";
-	private static final String DISABLED_ATTR = "disabled";
-	private static final String ACCESS_MODES_ATTR = "accessModes";
-	private static final String UNIT_ATTR = "unit";
-	private static final String CITY_ATTR = "city";
-	private static final String ALIASES_ATTR = "aliases";
+	public static final String REAL_NAME_ATTR = "realName";
+	public static final String PASSWORD_ATTR = "__PASSWORD__";
+	public static final String ACCOUNT_ATTR = "account";
+	public static final String DISABLED_ATTR = "disabled";
+	public static final String ACCESS_MODES_ATTR = "accessModes";
+	public static final String UNIT_ATTR = "unit";
+	public static final String CITY_ATTR = "city";
+	public static final String ALIASES_ATTR = "aliases";
 	//====================================================
 
 	/* ===================================================
 	 * Názvy nastavení v CGate
 	 */
-	private static final String ACCESS_MODES_SETTING = "AccessModes";
-	private static final String UNIT_SETTING = "ou";
-	private static final String REAL_NAME_SETTING = "RealName";
-	private static final String CITY_SETTING = "l";
-	private static final String MAIL_STORAGE_LIMIT_SETTING = "MaxAccountSize";
-	private static final String MAIL_BOX_LIMIT_SETTING = "MaxMailboxes";
+	public static final String ACCESS_MODES_SETTING = "AccessModes";
+	public static final String UNIT_SETTING = "ou";
+	public static final String REAL_NAME_SETTING = "RealName";
+	public static final String CITY_SETTING = "l";
+	public static final String MAIL_STORAGE_LIMIT_SETTING = "MaxAccountSize";
+	public static final String MAIL_BOX_LIMIT_SETTING = "MaxMailboxes";
+	//
+	public static final String GROUP_NAME = "__NAME__";
+	public static final String GROUP_SUBSCRIBERS = "subscribers";
+	public static final String GROUP_ID = "id";
 
-
-	private static final String ACCESS_MODES_DEFAULT = "default";
-	private static final String ACCESS_MODES_NONE = "None";
+	public static final String ACCESS_MODES_DEFAULT = "default";
+	public static final String ACCESS_MODES_NONE = "None";
 	/**
 	 * Reserved words for access modes settings.
 	 */
-	private static final String[] ACCESS_MODES_RESERVED_VALUES = new String[] { "All", ACCESS_MODES_NONE, ACCESS_MODES_DEFAULT };
+	public static final String[] ACCESS_MODES_RESERVED_VALUES = new String[] { "All", ACCESS_MODES_NONE, ACCESS_MODES_DEFAULT };
 
 	/**
 	 * Konfigurace
@@ -203,7 +206,16 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 
 		info = new ObjectClassInfoBuilder().addAllAttributeInfo(attributesInfoSet).build();
 
+		// group object
+		ObjectClassInfoBuilder groupObjectClassBuilder = new ObjectClassInfoBuilder();
+		groupObjectClassBuilder.setType(ObjectClass.GROUP_NAME);
+		groupObjectClassBuilder.addAttributeInfo(AttributeInfoBuilder.build(GROUP_NAME, String.class));
+		groupObjectClassBuilder.addAttributeInfo(
+				AttributeInfoBuilder.define(GROUP_SUBSCRIBERS).setMultiValued(true).setType(String.class).build());
+		groupObjectClassBuilder.addAttributeInfo(AttributeInfoBuilder.build(GROUP_ID, String.class));
+
 		schemaBuilder.defineObjectClass(info);
+		schemaBuilder.defineObjectClass(groupObjectClassBuilder.build());
 		schema = schemaBuilder.build();
 		return schema;
 	}
@@ -215,131 +227,170 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 	@Override
 	public Uid update(ObjectClass oclass, Uid uid, Set<Attribute> attributes,
 					  OperationOptions options) {
+
 		log.info("CGate connector - update");
-		String accountUid = null;
-		String uidValue = (String) uid.getValue().get(0);
-		GuardedString password = null;
-		String realName = null;
-		boolean disabled = false;
-		List accessModes = null;
-		String unit = null;
-		String city = null;
-		List aliases = null;
+		if (oclass.getObjectClassValue().equals(ObjectClass.ACCOUNT_NAME)) {
+			String accountUid = null;
+			String uidValue = (String) uid.getValue().get(0);
+			GuardedString password = null;
+			String realName = null;
+			boolean disabled = false;
+			List accessModes = null;
+			String unit = null;
+			String city = null;
+			List aliases = null;
 
-		//zpracuji atributy, ktere jsem dostal na vstupu, do promennych
-		for (Attribute attr : attributes) {
-			String name = attr.getName();
-			if (ACCOUNT_ATTR.equals(name)) {
-				accountUid = (String) attr.getValue().get(0);
-			} else if (PASSWORD_ATTR.equals(name)) {
-				password = (GuardedString) attr.getValue().get(0);
-			} else if (REAL_NAME_ATTR.equals(name)) {
-				realName = (String) attr.getValue().get(0);
-			} else if (DISABLED_ATTR.equals(name)) {
-				disabled = (Boolean) attr.getValue().get(0);
-			} else if (ACCESS_MODES_ATTR.equals(name)) {
-				accessModes = attr.getValue();
-			} else if (UNIT_ATTR.equals(name)) {
-				unit = (String) attr.getValue().get(0);
-			} else if (CITY_ATTR.equals(name)) {
-				city = (String) attr.getValue().get(0);
-			} else if (ALIASES_ATTR.equals(name)) {
-				aliases = attr.getValue();
+			//zpracuji atributy, ktere jsem dostal na vstupu, do promennych
+			for (Attribute attr : attributes) {
+				String name = attr.getName();
+				if (ACCOUNT_ATTR.equals(name)) {
+					accountUid = (String) attr.getValue().get(0);
+				} else if (PASSWORD_ATTR.equals(name)) {
+					password = (GuardedString) attr.getValue().get(0);
+				} else if (REAL_NAME_ATTR.equals(name)) {
+					realName = (String) attr.getValue().get(0);
+				} else if (DISABLED_ATTR.equals(name)) {
+					disabled = (Boolean) attr.getValue().get(0);
+				} else if (ACCESS_MODES_ATTR.equals(name)) {
+					accessModes = attr.getValue();
+				} else if (UNIT_ATTR.equals(name)) {
+					unit = (String) attr.getValue().get(0);
+				} else if (CITY_ATTR.equals(name)) {
+					city = (String) attr.getValue().get(0);
+				} else if (ALIASES_ATTR.equals(name)) {
+					aliases = attr.getValue();
+				}
 			}
-		}
 
-		//osetrime zmenu hesla
-		if (password != null) {
+			//osetrime zmenu hesla
+			if (password != null) {
+				try {
+					cli.setAccountPassword(uidValue + "@" + config.getDomainName(), asString(password));
+				} catch (Exception e) {
+					log.error("Exception during changing password, error code: " + cli.getErrCode());
+					e.printStackTrace();
+				}
+			}
+
+
+			//osetrime prejmenovani
+			if (!uidValue.equals(accountUid)) {
+				try {
+					cli.renameAccount(uidValue + "@" + config.getDomainName(), accountUid + "@" + config.getDomainName());
+				} catch (Exception e) {
+					log.error("Exception during renaming account, error code: " + cli.getErrCode());
+					e.printStackTrace();
+				}
+			}
+
+
+			//nastaveni aliasu
 			try {
-				cli.setAccountPassword(uidValue + "@" + config.getDomainName(), asString(password));
-			} catch (Exception e) {
-				log.error("Exception during changing password, error code: " + cli.getErrCode());
+				if (aliases != null) {
+					if (aliases.size() == 1 && ((String) aliases.get(0)).isEmpty()) {
+						log.info("Setting empty Vector.");
+						cli.setAccountAliases(accountUid + "@" + config.getDomainName(), new Vector<>());
+					} else {
+						Vector aliasesVector = new Vector(aliases);
+						cli.setAccountAliases(accountUid + "@" + config.getDomainName(), aliasesVector);
+					}
+				}
+			} catch (CGProException e) {
+				log.error("Exception during updating account aliases, error code: " + cli.getErrCode());
 				e.printStackTrace();
 			}
-		}
 
-
-
-		//osetrime prejmenovani
-		if (!uidValue.equals(accountUid)) {
+			//nastaveni uctu
+			Hashtable settings = null;
 			try {
-				cli.renameAccount(uidValue + "@" + config.getDomainName(), accountUid + "@" + config.getDomainName());
+				settings = cli.getAccountSettings(accountUid + "@" + config.getDomainName());
+				if (realName != null) {
+					settings.put(REAL_NAME_SETTING, CGProCLI.encodeString(realName));
+				}
+				if (unit != null) {
+					settings.put(UNIT_SETTING, CGProCLI.encodeString(unit));
+				}
+				if (city != null) {
+					settings.put(CITY_SETTING, CGProCLI.encodeString(city));
+				}
+
+				//nastaveni pristupovych metod
+				Vector accModes = asVector(settings.get(ACCESS_MODES_SETTING));
+				if (accModes == null) {
+					accModes = new Vector();
+				}
+
+				//zablokovani vyresime odebranim vsech pristupovych metod
+				if (disabled) {
+					accModes.clear();
+					accModes.addElement(ACCESS_MODES_NONE);
+				} else if (accessModes != null && accessModes.size() > 0) {
+					//prepiseme pristupove metody tim, co bylo poslano
+					accModes.clear();
+					for (Object mode : accessModes) {
+						accModes.addElement(mode);
+					}
+				} else if (accModes.contains(CGProCLI.encodeString(ACCESS_MODES_NONE))) {
+					//zablokovanemu uctu pro odblokovani opet nastavime puvodni pristupove metody
+					accModes.clear();
+					String accModesString = config.getDefaultAccModes();
+					String[] modes = accModesString.split(",");
+					for (String mode : modes) {
+						accModes.addElement(mode);
+					}
+				} else if (accModes.isEmpty()) {
+					// prazdne accModes odpovidaji nastaveni "default"
+					accModes.addElement(ACCESS_MODES_DEFAULT);
+				}
+				settings.put(ACCESS_MODES_SETTING, transformAccModes(accModes));
+
+				//webova sluzba, ktera nastavi ucet
+				cli.setAccountSettings(accountUid + "@" + config.getDomainName(), settings);
 			} catch (Exception e) {
-				log.error("Exception during renaming account, error code: " + cli.getErrCode());
+				log.error("Exception during updating account, error code: " + cli.getErrCode());
 				e.printStackTrace();
 			}
-		}
 
 
-		//nastaveni aliasu
-		try {
-			if (aliases != null) {
-				if (aliases.size() == 1 && ((String)aliases.get(0)).isEmpty()) {
-					log.info("Setting empty Vector.");
-					cli.setAccountAliases(accountUid + "@" + config.getDomainName(), new Vector<>());
-				} else {
-					Vector aliasesVector = new Vector(aliases);
-					cli.setAccountAliases(accountUid + "@" + config.getDomainName(), aliasesVector);
+			return new Uid(accountUid);
+		} else if(oclass.getObjectClassValue().equals(ObjectClass.GROUP_NAME)) {
+			String name = null;
+			List<Object> subscribers = null;
+			String id = null;
+			for (Attribute attr : attributes) {
+				switch (attr.getName()) {
+					case GROUP_NAME:
+						name = (String) attr.getValue().get(0);
+						break;
+					case GROUP_SUBSCRIBERS:
+						subscribers = attr.getValue();
+						break;
+					case GROUP_ID:
+						id = (String) attr.getValue().get(0);
+						break;
 				}
 			}
-		} catch (CGProException e) {
-			log.error("Exception during updating account aliases, error code: " + cli.getErrCode());
-			e.printStackTrace();
-		}
-
-		//nastaveni uctu
-		Hashtable settings = null;
-		try {
-			settings = cli.getAccountSettings(accountUid + "@" + config.getDomainName());
-			if (realName != null) {
-				settings.put(REAL_NAME_SETTING, CGProCLI.encodeString(realName));
-			}
-			if (unit != null) {
-				settings.put(UNIT_SETTING, CGProCLI.encodeString(unit));
-			}
-			if (city != null) {
-				settings.put(CITY_SETTING, CGProCLI.encodeString(city));
-			}
-
-			//nastaveni pristupovych metod
-			Vector accModes = asVector(settings.get(ACCESS_MODES_SETTING));
-			if (accModes == null) {
-				accModes = new Vector();
-			}
-
-			//zablokovani vyresime odebranim vsech pristupovych metod
-			if (disabled) {
-				accModes.clear();
-				accModes.addElement(ACCESS_MODES_NONE);
-			} else if (accessModes != null && accessModes.size() > 0) {
-				//prepiseme pristupove metody tim, co bylo poslano
-				accModes.clear();
-				for (Object mode : accessModes) {
-					accModes.addElement(mode);
+			try {
+				Vector vector = cli.listSubscribers(uid.getUidValue(), null, 1000);
+				for(Object subscriber : subscribers){
+					cli.list(uid.getUidValue(),"subscribe", (String) subscriber, true, false);
+					vector.remove(subscriber);
 				}
-			} else if (accModes.contains(CGProCLI.encodeString(ACCESS_MODES_NONE))) {
-				//zablokovanemu uctu pro odblokovani opet nastavime puvodni pristupove metody
-				accModes.clear();
-				String accModesString = config.getDefaultAccModes();
-				String[] modes = accModesString.split(",");
-				for (String mode : modes) {
-					accModes.addElement(mode);
+				for(Object subscriber : vector){
+					cli.list(uid.getUidValue(),"unsubscribe", (String) subscriber, true, false);
 				}
-			} else if (accModes.isEmpty()) {
-				// prazdne accModes odpovidaji nastaveni "default"
-				accModes.addElement(ACCESS_MODES_DEFAULT);
+				if(id != null){
+					Hashtable list = cli.getList(uid.getUidValue());
+					list.put(GROUP_ID, id);
+					cli.updateList(name, list);
+				}
+			} catch (CGProException e) {
+				e.printStackTrace();
 			}
-			settings.put(ACCESS_MODES_SETTING, transformAccModes(accModes));
-
-			//webova sluzba, ktera nastavi ucet
-			cli.setAccountSettings(accountUid + "@" + config.getDomainName(), settings);
-		} catch (Exception e) {
-			log.error("Exception during updating account, error code: " + cli.getErrCode());
-			e.printStackTrace();
+			return new Uid(uid.getUidValue());
+		} else {
+			throw new IllegalArgumentException("Something went terribly wrong!");
 		}
-
-
-		return new Uid(accountUid);
 	}
 
 	/**
@@ -363,7 +414,7 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 	public FilterTranslator<String> createFilterTranslator(ObjectClass oclass,
 														   OperationOptions opt) {
 		log.info("CGate connector - createFilterTranslator");
-		if (oclass.is(ObjectClass.ACCOUNT_NAME)) {
+		if (oclass.is(ObjectClass.ACCOUNT_NAME) || oclass.is(ObjectClass.GROUP_NAME)) {
 			return new AbstractFilterTranslator<String>() {
 				/**
 				 * Metoda vytvářející dotaz pro vyhledání daného objektu. V tomto případě si necháme navrátit
@@ -397,27 +448,55 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 							 ResultsHandler handler, OperationOptions opt) {
 		log.info("CGate connector - executeQuery");
 		ConnectorObject object = null;
-		if (StringUtil.isBlank(query)) {
-			//Vylistovat vsechny objekty dane tridy.
-			try {
-				Hashtable accounts = cli.listAccounts(config.getDomainName());
-				for(Object key : accounts.keySet()) {
-					//na kazdy ucet zavolam get a zaradim ho mezi nalezene ucty
-					object = getConnectorObject((String) key);
-					if (object != null) {
-						handler.handle(object);
+		if (oclass.getObjectClassValue().equals(ObjectClass.ACCOUNT_NAME)) {
+			if (StringUtil.isBlank(query)) {
+				//Vylistovat vsechny objekty dane tridy.
+				try {
+					Hashtable accounts = cli.listAccounts(config.getDomainName());
+					for (Object key : accounts.keySet()) {
+						//na kazdy ucet zavolam get a zaradim ho mezi nalezene ucty
+						object = getConnectorObject((String) key);
+						if (object != null) {
+							handler.handle(object);
+						}
 					}
+				} catch (Exception e) {
+					log.error("Exception during listing accounts, error code: " + cli.getErrCode());
+					e.printStackTrace();
 				}
-			} catch(Exception e) {
-				log.error("Exception during listing accounts, error code: " + cli.getErrCode());
-				e.printStackTrace();
+			} else {
+				//Vylistovat pouze zaznam odpovidajici zadanemu uid.
+				object = getConnectorObject(query);
+				if (object != null) {
+					handler.handle(object);
+				}
+			}
+		} else if(oclass.getObjectClassValue().equals(ObjectClass.GROUP_NAME)){
+			if (StringUtil.isBlank(query)) {
+				//Vylistovat vsechny objekty dane tridy.
+				try {
+					Vector lists = cli.listLists(config.getDomainName());
+					for (Object list : lists) {
+						//na kazdy ucet zavolam get a zaradim ho mezi nalezene ucty
+						object = getGroupConnectorObject((String) list);
+						if (object != null) {
+							handler.handle(object);
+						}
+					}
+				} catch (Exception e) {
+					log.error("Exception during listing accounts, error code: " + cli.getErrCode());
+					e.printStackTrace();
+				}
+			} else {
+				//Vylistovat pouze zaznam odpovidajici zadanemu uid.
+				//object = getConnectorObject(query);
+				object = getGroupConnectorObject(query);
+				if (object != null) {
+					handler.handle(object);
+				}
 			}
 		} else {
-			//Vylistovat pouze zaznam odpovidajici zadanemu uid.
-			object = getConnectorObject(query);
-			if (object != null) {
-				handler.handle(object);
-			}
+			throw new IllegalArgumentException("Object type not supported in executeQuery!");
 		}
 
 	}
@@ -482,17 +561,53 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 	}
 
 	/**
+	 * @param uid identifikátor účtu (vše před zavináčem)
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	private ConnectorObject getGroupConnectorObject(String uid) {
+		ConnectorObjectBuilder builder = new ConnectorObjectBuilder();
+		builder.setName(uid);
+		builder.setUid(uid);
+		builder.setObjectClass(ObjectClass.GROUP);
+		Hashtable settings;
+		try {
+			settings = cli.getList(uid);
+			//
+			String name = (String) settings.get(REAL_NAME_SETTING);
+			Vector subscribers = cli.listSubscribers(uid,null,10000);
+			//
+			if ((subscribers != null) && !subscribers.isEmpty()) {
+				builder.addAttribute(AttributeBuilder.build(GROUP_SUBSCRIBERS, subscribers.subList(0, subscribers.size())));
+			}
+			if (name != null) {
+				builder.addAttribute(AttributeBuilder.build(GROUP_NAME, CGProCLI.decodeString(name)));
+			}
+			builder.addAttribute(AttributeBuilder.build(GROUP_NAME, uid));
+		} catch (Exception e) {
+			log.error("Exception during getting account " + uid + "@" + config.getDomainName()+ ", error code: " + cli.getErrCode());
+			e.printStackTrace();
+			return null;
+		}
+		return builder.build();
+	}
+
+	/**
 	 * Smazání účtu
 	 */
 	@Override
 	public void delete(ObjectClass arg0, Uid arg1, OperationOptions arg2) {
 		log.info("CGate connector - delete");
-		try {
-			//webová služba, která smaže účet
-			cli.deleteAccount(arg1.getUidValue() + "@" + config.getDomainName());
-		} catch (Exception e) {
-			log.error("ExceptioCommuniGateConnectorn during delete: " + arg1.getUidValue() + "@" + config.getDomainName());
-			e.printStackTrace();
+		if (arg0.getObjectClassValue().equals(ObjectClass.ACCOUNT_NAME)) {
+			try {
+				//webová služba, která smaže účet
+				cli.deleteAccount(arg1.getUidValue() + "@" + config.getDomainName());
+			} catch (Exception e) {
+				log.error("ExceptioCommuniGateConnectorn during delete: " + arg1.getUidValue() + "@" + config.getDomainName());
+				e.printStackTrace();
+			}
+		} else {
+			throw new IllegalArgumentException("Object type not supported in delete!");
 		}
 	}
 
@@ -504,88 +619,91 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 	public Uid create(ObjectClass objectClass, Set<Attribute> attributes,
 					  OperationOptions opt) {
 		log.info("CommuniGateConnector - create");
+		if (objectClass.getObjectClassValue().equals(ObjectClass.ACCOUNT_NAME)) {
+			Hashtable settings = new Hashtable();
 
-		Hashtable settings = new Hashtable();
-
-		String accountUid = null;
-		GuardedString password = null;
-		boolean disabled = false;
-		List accessModes = null;
-		List aliases = null;
-		String defaultStorageLimit = config.getDefaultMailStorageLimit();
-		String defaultMailboxLimit = config.getDefaultMailBoxLimit();
+			String accountUid = null;
+			GuardedString password = null;
+			boolean disabled = false;
+			List accessModes = null;
+			List aliases = null;
+			String defaultStorageLimit = config.getDefaultMailStorageLimit();
+			String defaultMailboxLimit = config.getDefaultMailBoxLimit();
 
 
-		if ((defaultStorageLimit != null) && !"".equals(defaultStorageLimit)) {
-			settings.put(MAIL_STORAGE_LIMIT_SETTING, defaultStorageLimit);
-		}
-		if ((defaultMailboxLimit != null) && !"".equals(defaultMailboxLimit)) {
-			settings.put(MAIL_BOX_LIMIT_SETTING, defaultMailboxLimit);
-		}
-
-		//zpracovávám vstupy do promennych
-		for (Attribute attr : attributes) {
-			String name = attr.getName();
-			if (REAL_NAME_ATTR.equalsIgnoreCase(name)) {
-				settings.put(REAL_NAME_SETTING, CGProCLI.encodeString((String) attr.getValue().get(0)));
-			} else if (ACCOUNT_ATTR.equals(name)) {
-				accountUid = (String) attr.getValue().get(0);
-			} else if (PASSWORD_ATTR.equals(name)) {
-				password = (GuardedString) attr.getValue().get(0);
-			} else if (DISABLED_ATTR.equals(name)) {
-				disabled = (Boolean) attr.getValue().get(0);
-			} else if (ACCESS_MODES_ATTR.equals(name)) {
-				accessModes = attr.getValue();
-			} else if (UNIT_ATTR.equals(name)) {
-				settings.put(UNIT_SETTING, CGProCLI.encodeString((String) attr.getValue().get(0)));
-			} else if (CITY_ATTR.equals(name)) {
-				settings.put(CITY_SETTING, CGProCLI.encodeString((String) attr.getValue().get(0)));
-			} else if (ALIASES_ATTR.equals(name)) {
-				aliases = attr.getValue();
+			if ((defaultStorageLimit != null) && !"".equals(defaultStorageLimit)) {
+				settings.put(MAIL_STORAGE_LIMIT_SETTING, defaultStorageLimit);
 			}
-		}
+			if ((defaultMailboxLimit != null) && !"".equals(defaultMailboxLimit)) {
+				settings.put(MAIL_BOX_LIMIT_SETTING, defaultMailboxLimit);
+			}
 
-		//ucet vznikne a bude moci pouzivat vsechny sluzby. Pokud je disabled, nebude pouzivat nic.
-		Vector accModes = new Vector();
-		if (!disabled) {
-			if (accessModes == null) {
-				String accModesString = config.getDefaultAccModes();
-				String[] modes = accModesString.split(",");
-				for (String mode : modes) {
-					accModes.addElement(mode);
+			//zpracovávám vstupy do promennych
+			for (Attribute attr : attributes) {
+				String name = attr.getName();
+				if (REAL_NAME_ATTR.equalsIgnoreCase(name)) {
+					settings.put(REAL_NAME_SETTING, CGProCLI.encodeString((String) attr.getValue().get(0)));
+				} else if (ACCOUNT_ATTR.equals(name)) {
+					accountUid = (String) attr.getValue().get(0);
+				} else if (PASSWORD_ATTR.equals(name)) {
+					password = (GuardedString) attr.getValue().get(0);
+				} else if (DISABLED_ATTR.equals(name)) {
+					disabled = (Boolean) attr.getValue().get(0);
+				} else if (ACCESS_MODES_ATTR.equals(name)) {
+					accessModes = attr.getValue();
+				} else if (UNIT_ATTR.equals(name)) {
+					settings.put(UNIT_SETTING, CGProCLI.encodeString((String) attr.getValue().get(0)));
+				} else if (CITY_ATTR.equals(name)) {
+					settings.put(CITY_SETTING, CGProCLI.encodeString((String) attr.getValue().get(0)));
+				} else if (ALIASES_ATTR.equals(name)) {
+					aliases = attr.getValue();
+				}
+			}
+
+			//ucet vznikne a bude moci pouzivat vsechny sluzby. Pokud je disabled, nebude pouzivat nic.
+			Vector accModes = new Vector();
+			if (!disabled) {
+				if (accessModes == null) {
+					String accModesString = config.getDefaultAccModes();
+					String[] modes = accModesString.split(",");
+					for (String mode : modes) {
+						accModes.addElement(mode);
+					}
+				} else {
+					for (Object mode : accessModes) {
+						accModes.addElement(mode);
+					}
 				}
 			} else {
-				for (Object mode : accessModes) {
-					accModes.addElement(mode);
-				}
+				accModes.addElement(ACCESS_MODES_NONE);
 			}
+			settings.put(ACCESS_MODES_SETTING, transformAccModes(accModes));
+
+			try {
+				if ((accountUid != null) && (!"".equals(accountUid))) {
+					//webova sluzba, ktera vytvori ucet
+					String email = accountUid + "@" + config.getDomainName();
+					cli.createAccount(email,settings,null,false);
+					if (password != null) {
+						//bylo-li zadano heslo, nastavim ho
+						cli.setAccountPassword(email, asString(password));
+					}
+
+					//nastaveni aliasu
+					if (aliases != null) {
+						Vector aliasesVector = new Vector(aliases);
+						cli.setAccountAliases(email, aliasesVector);
+					}
+
+					return new Uid(accountUid);
+				}
+			} catch(Exception e) {
+				System.out.println(e.getMessage());
+			}
+			return null;
 		} else {
-			accModes.addElement(ACCESS_MODES_NONE);
+			throw new IllegalArgumentException("Object type not supported in create!");
 		}
-		settings.put(ACCESS_MODES_SETTING, transformAccModes(accModes));
-
-		try {
-			if ((accountUid != null) && (!"".equals(accountUid))) {
-				//webova sluzba, ktera vytvori ucet
-				String email = accountUid + "@" + config.getDomainName();
-				cli.createAccount(email,settings,null,false);
-				if (password != null) {
-					//bylo-li zadano heslo, nastavim ho
-					cli.setAccountPassword(email, asString(password));
-				}
-
-				//nastaveni aliasu
-				if (aliases != null) {
-					Vector aliasesVector = new Vector(aliases);
-					cli.setAccountAliases(email, aliasesVector);
-				}
-
-				return new Uid(accountUid);
-			}
-		} catch(Exception e) {
-			System.out.println(e.getMessage());
-		}
-		return null;
 	}
 
 	/**
