@@ -26,33 +26,28 @@ import java.util.Arrays;
 import org.identityconnectors.common.security.GuardedString;
 
 /**
- * Třída sloužící k získání hesla z objektu třídy GuardedString.
+ * Get password from GuardedString.
  *
- * @author Jaromír Mlejnek (do CGate konektoru zkopírováno z SSH konektoru)
+ * @author Jaromír Mlejnek (to CGate connector copied from SSH connector)
  */
 public class GuardedStringAccessor implements GuardedString.Accessor {
 
 	private char[] array;
 
 	/**
-	 * Metoda uloži heslo z objektu třídy GuardedString do pole typu char.
+	 * Method saves password to array
 	 */
 	public void access(char[] clearChars) {
 		array = new char [clearChars.length];
 		System.arraycopy(clearChars, 0, array, 0, clearChars.length);
 	}
 
-	/**
-	 * Metoda navracející heslo v poli typu char.
-	 *
-	 * @return Pole typu char, ve kterém je uloženo heslo.
-	 */
 	public char[] getArray() {
 		return array;
 	}
 
 	/**
-	 * Metoda vyčistí pole, ve kterém je heslo.
+	 * Clean array
 	 */
 	public void clearArray() {
 		Arrays.fill(array, 0, array.length, ' ');
