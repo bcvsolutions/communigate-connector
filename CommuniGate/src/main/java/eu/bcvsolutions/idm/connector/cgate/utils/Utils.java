@@ -1,12 +1,13 @@
 package eu.bcvsolutions.idm.connector.cgate.utils;
 
-import eu.bcvsolutions.idm.connector.cgate.CommuniGateConnector;
-import eu.bcvsolutions.idm.connector.cgate.GuardedStringAccessor;
+import java.util.Arrays;
+import java.util.Vector;
+
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.common.security.GuardedString;
 
-import java.util.Arrays;
-import java.util.Vector;
+import eu.bcvsolutions.idm.connector.cgate.CommuniGateConnector;
+import eu.bcvsolutions.idm.connector.cgate.GuardedStringAccessor;
 
 public class Utils {
 

@@ -43,13 +43,19 @@ public class CommuniGateConfiguration extends AbstractConfiguration {
 	private GuardedString password;
 	private String domainName;
 
-	// List of all allowed access points which have to be in setting for new account.
+	/**
+	 * List of all allowed access points which have to be in setting for new account.
+	 */
 	private String defaultAccModes;
 
-	// Size of newly created storages
+	/**
+	 * Size of newly created storages ("default", "unlimited", "100M", 300k",...)
+	 */
 	private String defaultMailStorageLimit;
 
-	// max number of mailboxes
+	/**
+	 * max number of mailboxes (for example 30)
+	 */
 	private String defaultMailBoxLimit;
 
 	@Override

@@ -1,14 +1,20 @@
 package eu.bcvsolutions.idm.connector.cgate.execute;
 
-import com.stalker.CGPro.CGProCLI;
-import eu.bcvsolutions.idm.connector.cgate.CommuniGateConfiguration;
-import eu.bcvsolutions.idm.connector.cgate.CommuniGateConnector;
+import java.util.Vector;
+
 import org.identityconnectors.common.StringUtil;
 import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.objects.*;
+import org.identityconnectors.framework.common.objects.AttributeBuilder;
+import org.identityconnectors.framework.common.objects.ConnectorObject;
+import org.identityconnectors.framework.common.objects.ConnectorObjectBuilder;
+import org.identityconnectors.framework.common.objects.ObjectClass;
+import org.identityconnectors.framework.common.objects.OperationOptions;
+import org.identityconnectors.framework.common.objects.ResultsHandler;
 
-import java.util.Hashtable;
-import java.util.Vector;
+import com.stalker.CGPro.CGProCLI;
+
+import eu.bcvsolutions.idm.connector.cgate.CommuniGateConfiguration;
+import eu.bcvsolutions.idm.connector.cgate.CommuniGateConnector;
 
 public class ExecuteQueryGroup implements ExecuteQuery{
 
@@ -57,20 +63,12 @@ public class ExecuteQueryGroup implements ExecuteQuery{
         builder.setName(uid);
         builder.setUid(uid);
         builder.setObjectClass(ObjectClass.GROUP);
-        Hashtable settings;
         try {
-            settings = cli.getList(uid);
-            //
-            String name = (String) settings.get(CommuniGateConnector.REAL_NAME_SETTING);
             Vector subscribers = cli.listSubscribers(uid,null,10000);
             //
             if ((subscribers != null) && !subscribers.isEmpty()) {
                 builder.addAttribute(AttributeBuilder.build(CommuniGateConnector.GROUP_SUBSCRIBERS, subscribers.subList(0, subscribers.size())));
             }
-            if (name != null) {
-                builder.addAttribute(AttributeBuilder.build(CommuniGateConnector.GROUP_NAME, CGProCLI.decodeString(name)));
-            }
-            builder.addAttribute(AttributeBuilder.build(CommuniGateConnector.GROUP_NAME, uid));
         } catch (Exception e) {
             log.error("Exception during getting account " + uid + "@" + config.getDomainName()+ ", error code: " + cli.getErrCode());
             e.printStackTrace();

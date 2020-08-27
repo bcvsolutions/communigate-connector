@@ -26,14 +26,6 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.util.TreeSet;
 
-import eu.bcvsolutions.idm.connector.cgate.create.CreateAccount;
-import eu.bcvsolutions.idm.connector.cgate.execute.ExecuteQuery;
-import eu.bcvsolutions.idm.connector.cgate.execute.ExecuteQueryAccount;
-import eu.bcvsolutions.idm.connector.cgate.execute.ExecuteQueryGroup;
-import eu.bcvsolutions.idm.connector.cgate.update.Update;
-import eu.bcvsolutions.idm.connector.cgate.update.UpdateAccount;
-import eu.bcvsolutions.idm.connector.cgate.update.UpdateGroup;
-import eu.bcvsolutions.idm.connector.cgate.utils.Utils;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.common.objects.Attribute;
@@ -62,6 +54,15 @@ import org.identityconnectors.framework.spi.operations.TestOp;
 import org.identityconnectors.framework.spi.operations.UpdateOp;
 
 import com.stalker.CGPro.CGProCLI;
+
+import eu.bcvsolutions.idm.connector.cgate.create.CreateAccount;
+import eu.bcvsolutions.idm.connector.cgate.execute.ExecuteQuery;
+import eu.bcvsolutions.idm.connector.cgate.execute.ExecuteQueryAccount;
+import eu.bcvsolutions.idm.connector.cgate.execute.ExecuteQueryGroup;
+import eu.bcvsolutions.idm.connector.cgate.update.Update;
+import eu.bcvsolutions.idm.connector.cgate.update.UpdateAccount;
+import eu.bcvsolutions.idm.connector.cgate.update.UpdateGroup;
+import eu.bcvsolutions.idm.connector.cgate.utils.Utils;
 
 /**
  * Class for CGate connector.

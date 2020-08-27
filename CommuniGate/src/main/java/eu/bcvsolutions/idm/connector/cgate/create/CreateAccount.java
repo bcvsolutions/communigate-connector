@@ -1,17 +1,19 @@
 package eu.bcvsolutions.idm.connector.cgate.create;
 
-import com.stalker.CGPro.CGProCLI;
-import eu.bcvsolutions.idm.connector.cgate.CommuniGateConfiguration;
-import eu.bcvsolutions.idm.connector.cgate.CommuniGateConnector;
-import eu.bcvsolutions.idm.connector.cgate.utils.Utils;
-import org.identityconnectors.common.security.GuardedString;
-import org.identityconnectors.framework.common.objects.Attribute;
-import org.identityconnectors.framework.common.objects.Uid;
-
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+
+import org.identityconnectors.common.security.GuardedString;
+import org.identityconnectors.framework.common.objects.Attribute;
+import org.identityconnectors.framework.common.objects.Uid;
+
+import com.stalker.CGPro.CGProCLI;
+
+import eu.bcvsolutions.idm.connector.cgate.CommuniGateConfiguration;
+import eu.bcvsolutions.idm.connector.cgate.CommuniGateConnector;
+import eu.bcvsolutions.idm.connector.cgate.utils.Utils;
 
 public class CreateAccount {
 

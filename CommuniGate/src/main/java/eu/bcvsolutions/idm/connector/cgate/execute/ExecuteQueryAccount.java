@@ -1,15 +1,22 @@
 package eu.bcvsolutions.idm.connector.cgate.execute;
 
+import java.util.Hashtable;
+import java.util.Vector;
+
+import org.identityconnectors.common.StringUtil;
+import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.objects.AttributeBuilder;
+import org.identityconnectors.framework.common.objects.ConnectorObject;
+import org.identityconnectors.framework.common.objects.ConnectorObjectBuilder;
+import org.identityconnectors.framework.common.objects.ObjectClass;
+import org.identityconnectors.framework.common.objects.OperationOptions;
+import org.identityconnectors.framework.common.objects.ResultsHandler;
+
 import com.stalker.CGPro.CGProCLI;
+
 import eu.bcvsolutions.idm.connector.cgate.CommuniGateConfiguration;
 import eu.bcvsolutions.idm.connector.cgate.CommuniGateConnector;
 import eu.bcvsolutions.idm.connector.cgate.utils.Utils;
-import org.identityconnectors.common.StringUtil;
-import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.objects.*;
-
-import java.util.Hashtable;
-import java.util.Vector;
 
 public class ExecuteQueryAccount implements ExecuteQuery {
 

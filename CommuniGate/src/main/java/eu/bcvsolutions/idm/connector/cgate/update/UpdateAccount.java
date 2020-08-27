@@ -1,17 +1,22 @@
 package eu.bcvsolutions.idm.connector.cgate.update;
 
-import com.stalker.CGPro.CGProCLI;
-import com.stalker.CGPro.CGProException;
-import eu.bcvsolutions.idm.connector.cgate.CommuniGateConfiguration;
-import eu.bcvsolutions.idm.connector.cgate.CommuniGateConnector;
-import eu.bcvsolutions.idm.connector.cgate.utils.Utils;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
+
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.OperationOptions;
 import org.identityconnectors.framework.common.objects.Uid;
 
-import java.util.*;
+import com.stalker.CGPro.CGProCLI;
+import com.stalker.CGPro.CGProException;
+
+import eu.bcvsolutions.idm.connector.cgate.CommuniGateConfiguration;
+import eu.bcvsolutions.idm.connector.cgate.CommuniGateConnector;
+import eu.bcvsolutions.idm.connector.cgate.utils.Utils;
 
 public class UpdateAccount implements Update {
 
