@@ -26,7 +26,6 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeInfo;
@@ -52,6 +51,8 @@ import org.identityconnectors.framework.spi.operations.SchemaOp;
 import org.identityconnectors.framework.spi.operations.SearchOp;
 import org.identityconnectors.framework.spi.operations.TestOp;
 import org.identityconnectors.framework.spi.operations.UpdateOp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.stalker.CGPro.CGProCLI;
 
@@ -110,7 +111,7 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 	private static Schema schema = null;
 
 	//Logger
-	Log log = Log.getLog(CommuniGateConnector.class);
+	private static final Logger log = LoggerFactory.getLogger(CommuniGateConnector.class);
 
 	public CommuniGateConnector() {
 	}
@@ -123,7 +124,7 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 			// verify accounts password
 			result = cli.verifyAccountPassword(uid, Utils.asString(password));
 		} catch (Exception e) {
-			log.error("Exception during authentication, error code: " + cli.getErrCode());
+			log.error("Exception during authentication, error code: [{}]", cli.getErrCode());
 			e.printStackTrace();
 		}
 		if (result) {
@@ -150,7 +151,7 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 				log.error("Connection to CommuniGate failed.");
 			}
 		} catch (Exception e) {
-			log.error("Exception during test, error message: " + cli.getErrCode());
+			log.error("Exception during test, error message: [{}]", cli.getErrCode());
 			e.printStackTrace();
 		}
 	}
@@ -271,7 +272,8 @@ public class CommuniGateConnector implements Connector, CreateOp, DeleteOp, Sear
 			try {
 				cli.deleteAccount(arg1.getUidValue() + "@" + config.getDomainName());
 			} catch (Exception e) {
-				log.error("ExceptioCommuniGateConnectorn during delete: " + arg1.getUidValue() + "@" + config.getDomainName());
+				String mail = arg1.getUidValue() + "@" + config.getDomainName();
+				log.error("ExceptioCommuniGateConnectorn during delete: [{}]", mail);
 				e.printStackTrace();
 			}
 		} else {

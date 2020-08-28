@@ -3,13 +3,14 @@ package eu.bcvsolutions.idm.connector.cgate.execute;
 import java.util.Vector;
 
 import org.identityconnectors.common.StringUtil;
-import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.ConnectorObject;
 import org.identityconnectors.framework.common.objects.ConnectorObjectBuilder;
 import org.identityconnectors.framework.common.objects.ObjectClass;
 import org.identityconnectors.framework.common.objects.OperationOptions;
 import org.identityconnectors.framework.common.objects.ResultsHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.stalker.CGPro.CGProCLI;
 
@@ -21,7 +22,7 @@ public class ExecuteQueryGroup implements ExecuteQuery{
     private CGProCLI cli;
     private CommuniGateConfiguration config;
 
-    private Log log = Log.getLog(ExecuteQueryGroup.class);
+    private static final Logger log = LoggerFactory.getLogger(ExecuteQueryGroup.class);
 
     public ExecuteQueryGroup(CGProCLI cli, CommuniGateConfiguration config){
         this.cli = cli;
@@ -41,7 +42,7 @@ public class ExecuteQueryGroup implements ExecuteQuery{
                     }
                 }
             } catch (Exception e) {
-                log.error("Exception during listing accounts, error code: " + cli.getErrCode());
+                log.error("Exception during listing accounts, error code: [{}]", cli.getErrCode());
                 e.printStackTrace();
             }
         } else {
@@ -70,7 +71,8 @@ public class ExecuteQueryGroup implements ExecuteQuery{
                 builder.addAttribute(AttributeBuilder.build(CommuniGateConnector.GROUP_SUBSCRIBERS, subscribers.subList(0, subscribers.size())));
             }
         } catch (Exception e) {
-            log.error("Exception during getting account " + uid + "@" + config.getDomainName()+ ", error code: " + cli.getErrCode());
+            String mail = uid + "@" + config.getDomainName();
+            log.error("Exception during getting account [{}], error code: [{}]", mail, cli.getErrCode());
             e.printStackTrace();
             return null;
         }

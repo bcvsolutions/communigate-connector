@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.OperationOptions;
 import org.identityconnectors.framework.common.objects.Uid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.stalker.CGPro.CGProCLI;
 import com.stalker.CGPro.CGProException;
@@ -23,7 +24,7 @@ public class UpdateAccount implements Update {
     private CGProCLI cli;
     private CommuniGateConfiguration config;
 
-    private Log log = Log.getLog(UpdateAccount.class);
+    private static final Logger log = LoggerFactory.getLogger(UpdateAccount.class);
 
     public UpdateAccount(CGProCLI cli, CommuniGateConfiguration config){
         this.cli = cli;
@@ -113,7 +114,7 @@ public class UpdateAccount implements Update {
 
             cli.setAccountSettings(accountUid + "@" + config.getDomainName(), settings);
         } catch (Exception e) {
-            log.error("Exception during updating account, error code: " + cli.getErrCode());
+            log.error("Exception during updating account, error code: [{}]", cli.getErrCode());
             e.printStackTrace();
         }
     }
@@ -131,7 +132,7 @@ public class UpdateAccount implements Update {
                 }
             }
         } catch (CGProException e) {
-            log.error("Exception during updating account aliases, error code: " + cli.getErrCode());
+            log.error("Exception during updating account aliases, error code: [{}]", cli.getErrCode());
             e.printStackTrace();
         }
     }
@@ -141,7 +142,7 @@ public class UpdateAccount implements Update {
             try {
                 cli.renameAccount(uidValue + "@" + config.getDomainName(), accountUid + "@" + config.getDomainName());
             } catch (Exception e) {
-                log.error("Exception during renaming account, error code: " + cli.getErrCode());
+                log.error("Exception during renaming account, error code: [{}]", cli.getErrCode());
                 e.printStackTrace();
             }
         }
@@ -152,7 +153,7 @@ public class UpdateAccount implements Update {
             try {
                 cli.setAccountPassword(uidValue + "@" + config.getDomainName(), Utils.asString(password));
             } catch (Exception e) {
-                log.error("Exception during changing password, error code: " + cli.getErrCode());
+                log.error("Exception during changing password, error code: [{}]", cli.getErrCode());
                 e.printStackTrace();
             }
         }

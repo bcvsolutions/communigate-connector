@@ -4,13 +4,14 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.identityconnectors.common.StringUtil;
-import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.ConnectorObject;
 import org.identityconnectors.framework.common.objects.ConnectorObjectBuilder;
 import org.identityconnectors.framework.common.objects.ObjectClass;
 import org.identityconnectors.framework.common.objects.OperationOptions;
 import org.identityconnectors.framework.common.objects.ResultsHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.stalker.CGPro.CGProCLI;
 
@@ -23,7 +24,7 @@ public class ExecuteQueryAccount implements ExecuteQuery {
     private CGProCLI cli;
     private CommuniGateConfiguration config;
 
-    private Log log = Log.getLog(ExecuteQueryAccount.class);
+    private static final Logger log = LoggerFactory.getLogger(ExecuteQueryAccount.class);
 
     public ExecuteQueryAccount(CGProCLI cli, CommuniGateConfiguration config){
         this.cli = cli;
@@ -43,7 +44,7 @@ public class ExecuteQueryAccount implements ExecuteQuery {
                     }
                 }
             } catch (Exception e) {
-                log.error("Exception during listing accounts, error code: " + cli.getErrCode());
+                log.error("Exception during listing accounts, error code: [{}]", cli.getErrCode());
                 e.printStackTrace();
             }
         } else {
@@ -61,7 +62,7 @@ public class ExecuteQueryAccount implements ExecuteQuery {
      */
     @SuppressWarnings("rawtypes")
     private ConnectorObject getConnectorObject(String uid) {
-        log.info("CGate connector - getObject, uid: " + uid);
+        log.info("CGate connector - getObject, uid: [{}]", uid);
         ConnectorObjectBuilder builder = new ConnectorObjectBuilder();
         builder.setName(uid);
         builder.setUid(uid);
@@ -99,7 +100,8 @@ public class ExecuteQueryAccount implements ExecuteQuery {
                 builder.addAttribute(AttributeBuilder.build(CommuniGateConnector.ALIASES_ATTR, accountAliases.subList(0, accountAliases.size())));
             }
         } catch (Exception e) {
-            log.error("Exception during getting account " + uid + "@" + config.getDomainName()+ ", error code: " + cli.getErrCode());
+            String mail = uid + "@" + config.getDomainName();
+            log.error("Exception during getting account [{}], error code: [{}]", mail, cli.getErrCode());
             e.printStackTrace();
             return null;
         }

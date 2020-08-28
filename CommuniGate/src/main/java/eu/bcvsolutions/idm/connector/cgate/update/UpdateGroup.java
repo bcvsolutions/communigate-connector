@@ -6,10 +6,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
 
-import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.OperationOptions;
 import org.identityconnectors.framework.common.objects.Uid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.stalker.CGPro.CGProCLI;
 import com.stalker.CGPro.CGProException;
@@ -18,7 +19,7 @@ import eu.bcvsolutions.idm.connector.cgate.CommuniGateConnector;
 
 public class UpdateGroup implements Update {
 
-    Log LOG = Log.getLog(UpdateGroup.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UpdateAccount.class);
 
     private CGProCLI cli;
 
@@ -52,12 +53,12 @@ public class UpdateGroup implements Update {
                     cli.list(uid.getUidValue(), "subscribe", (String) subscriber, true, false);
                     boolean remove = vector.remove(subscriber);
                     if(!remove){
-                        LOG.info("Subscribe [{0}] to [{1}].", subscriber, uid.getUidValue());
+                        LOG.info("Subscribe [{}] to [{}].", subscriber, uid.getUidValue());
                     }
                 }
                 for (Object subscriber : vector) {
                     cli.list(uid.getUidValue(), "unsubscribe", (String) subscriber, true, false);
-                    LOG.info("Unsubscribe [{0}] from [{1}].", subscriber, uid.getUidValue());
+                    LOG.info("Unsubscribe [{}] from [{}].", subscriber, uid.getUidValue());
                 }
             }
             if(id != null){
