@@ -27,7 +27,7 @@ import org.identityconnectors.framework.spi.AbstractConfiguration;
 import org.identityconnectors.framework.spi.ConfigurationProperty;
 
 /**
- * Třída specifikující konfiguraci CGate konektoru.
+ * Configuration of CGate connector.
  *
  * @author Vojtěch Matocha
  */
@@ -37,50 +37,27 @@ public class CommuniGateConfiguration extends AbstractConfiguration {
 
 	}
 
-	/**
-	 * Hostname, na kterém běží CGate
-	 */
 	private String address;
-
-	/**
-	 * Port, na kterém CGate poslouchá
-	 */
 	private int port;
-
-	/**
-	 * Uživatelské jméno, pod kterým IdM přistupuje do CGate
-	 */
 	private String username;
-
-	/**
-	 * Heslo uživatele, pod kterým IdM přistupuje do CGate
-	 */
 	private GuardedString password;
-
-	/**
-	 * Doména, ve které má IdM spravovat účty
-	 */
 	private String domainName;
 
 	/**
-	 * Seznam povolených přístupových způsobů, které mají být nastaveny novému účtu. Seznam jednotlivých
-	 * názvů módů podle dokumentace k CGate, jednotlivé názvy jsou odděleny čárkou
+	 * List of all allowed access points which have to be in setting for new account.
 	 */
 	private String defaultAccModes;
 
 	/**
-	 * Velikost nově vytvářených schránek (např.: "default", "unlimited", "100M", 300k",...)
+	 * Size of newly created storages ("default", "unlimited", "100M", 300k",...)
 	 */
 	private String defaultMailStorageLimit;
 
 	/**
-	 * Maximální počet schránek pro jeden nově vytvořený účet, např.: "30"
+	 * max number of mailboxes (for example 30)
 	 */
 	private String defaultMailBoxLimit;
 
-	/**
-	 * Metoda, která ověří, zda jsou vstupní parametry zadány správně
-	 */
 	@Override
 	public void validate() {
 		if (StringUtil.isBlank(getAddress())) {
@@ -154,23 +131,10 @@ public class CommuniGateConfiguration extends AbstractConfiguration {
 		return defaultMailBoxLimit;
 	}
 
-	/**
-	 * Vrací a formátuje zprávu.
-	 *
-	 * @param key klíč pro výběr zprávy z "Message.properties".
-	 * @return Zpráva.
-	 */
 	public String getMessage(String key) {
 		return getConnectorMessages().format(key, key);
 	}
 
-	/**
-	 * Vrací a formátuje zprávu.
-	 *
-	 * @param key     klíč pro výběr zprávy z "Message.properties"
-	 * @param objects parametry
-	 * @return Zpráva.
-	 */
 	public String getMessage(String key, Object... objects) {
 		return getConnectorMessages().format(key, key, objects);
 	}

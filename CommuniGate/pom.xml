@@ -33,7 +33,7 @@
     
   <groupId>eu.bcvsolutions.idm.connector.cgate</groupId>
   <artifactId>CommuniGate</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <name>CGate Connector</name>
   <packaging>jar</packaging>
 
@@ -79,6 +79,17 @@
       <groupId>net.tirasa.connid.bundles</groupId>
       <artifactId>net.tirasa.connid.bundles.zimbra</artifactId>
       <version>1.1.0-SNAPSHOT</version>
+    </dependency>
+      <dependency>
+          <groupId>com.github.tntim96</groupId>
+          <artifactId>fakesmtp</artifactId>
+          <version>2.0</version>
+          <scope>compile</scope>
+      </dependency>
+    <dependency>
+      <groupId>net.tirasa.connid</groupId>
+      <artifactId>slf4j-logging</artifactId>
+      <version>1.4.2.0</version>
     </dependency>
   </dependencies>
     
